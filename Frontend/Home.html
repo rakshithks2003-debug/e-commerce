@@ -215,7 +215,7 @@
     </form>
 
     <nav class="actions" aria-label="Account">
-      <a href="login-page.html">Sign in</a>
+      <a href="login.html">Sign in</a>
       <a class="cart" href="cart.html" id="cart-link" aria-label="Cart, 0 items">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>
         <span class="count" id="cart-count">0</span>
@@ -334,6 +334,27 @@
   const cartLink = document.getElementById('cart-link');
   let cart = 0;
   let toastTimer;
+  let currentUserId = localStorage.getItem('userId');
+
+  // Load cart count on page load
+  async function loadCartCount() {
+    if (!currentUserId) return;
+    
+    try {
+      const res = await fetch(`/api/cart/${currentUserId}`);
+      const data = await res.json();
+      if (res.ok) {
+        const totalItems = data.items.reduce((sum, item) => sum + item.quantity, 0);
+        cart = totalItems;
+        cartCount.textContent = cart;
+        cartLink.setAttribute('aria-label', `Cart, ${cart} ${cart === 1 ? 'item' : 'items'}`);
+      }
+    } catch (err) {
+      console.error('Error loading cart:', err);
+    }
+  }
+
+  loadCartCount();
 
   grid.innerHTML = products.map(p => `
     <article class="card" data-cat="${p.cat}">
@@ -366,23 +387,54 @@
     });
   });
 
-  grid.addEventListener('click', (e) => {
+  grid.addEventListener('click', async (e) => {
     const btn = e.target.closest('.add');
     if (!btn) return;
 
-    // TODO: send this to your cart API, e.g. fetch('/api/cart', { method: 'POST', ... })
-    cart += 1;
-    cartCount.textContent = cart;
-    cartLink.setAttribute('aria-label', `Cart, ${cart} ${cart === 1 ? 'item' : 'items'}`);
+    const product = products.find(p => p.name === btn.dataset.name);
+    
+    if (!currentUserId) {
+      toast.textContent = 'Please sign in to add items to cart';
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+      return;
+    }
 
-    btn.textContent = 'Added';
-    btn.classList.add('done');
-    setTimeout(() => { btn.textContent = 'Add to cart'; btn.classList.remove('done'); }, 1200);
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUserId,
+          productId: product.id,
+          productName: product.name,
+          productPrice: product.price,
+          quantity: 1
+        })
+      });
 
-    toast.textContent = `${btn.dataset.name} added to cart`;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+      if (res.ok) {
+        cart += 1;
+        cartCount.textContent = cart;
+        cartLink.setAttribute('aria-label', `Cart, ${cart} ${cart === 1 ? 'item' : 'items'}`);
+
+        btn.textContent = 'Added';
+        btn.classList.add('done');
+        setTimeout(() => { btn.textContent = 'Add to cart'; btn.classList.remove('done'); }, 1200);
+
+        toast.textContent = `${btn.dataset.name} added to cart`;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+      toast.textContent = 'Failed to add item to cart';
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
   });
 </script>
 </body>
