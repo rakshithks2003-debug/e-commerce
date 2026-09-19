@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in | Shopping cart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12202b;
+    --muted: #566873;
+    --line: #d3dcdf;
+    --page: #ffffff;
+    --teal: #0d5f5b;
+    --teal-deep: #0a4744;
+    --mint: #d9ede8;
+    --signal: #ffd23f;
+    --error: #b3261e;
+    --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--page);
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid #2b8a84; outline-offset: 2px; }
+
+  /* ---------- Layout ---------- */
+  .shell { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr); background: #f3f6f6; }
+
+  .auth {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 28px 24px;
+  }
+  @media (min-width: 900px) { .auth { padding: 36px 64px; } }
+
+  .brand {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--teal);
+  }
+
+  .auth-main {
+    width: 100%; max-width: 440px; margin: 24px auto; align-self: center;
+    padding: 36px 32px; background: #fff; border: 1px solid var(--line); border-radius: 16px;
+  }
+  @media (max-width: 480px) { .auth-main { padding: 28px 20px; } }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(30px, 4vw, 38px);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin: 0 0 10px;
+  }
+  .lede { margin: 0 0 32px; color: var(--muted); max-width: 36ch; }
+
+  /* ---------- Form ---------- */
+  .field { margin-bottom: 20px; }
+  .label-row { display: flex; justify-content: space-between; align-items: baseline; }
+  label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+  .label-row label { margin-bottom: 6px; }
+
+  .link { color: var(--teal); font-size: 14px; font-weight: 500; text-underline-offset: 3px; }
+  .link:hover { color: var(--teal-deep); }
+
+  input[type="email"], input[type="password"], input[type="text"] {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    font: inherit;
+    color: var(--ink);
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:hover { border-color: #a9b8bd; }
+  input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13, 95, 91, .18); }
+  input[aria-invalid="true"] { border-color: var(--error); }
+  input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(179, 38, 30, .16); }
+
+  .pw { position: relative; }
+  .pw input { padding-right: 68px; }
+  .reveal {
+    position: absolute; top: 4px; right: 4px; height: 40px; padding: 0 12px;
+    font: inherit; font-size: 14px; font-weight: 600; color: var(--teal);
+    background: none; border: 0; border-radius: 8px; cursor: pointer;
+  }
+  .reveal:hover { background: var(--mint); }
+
+  .err { margin: 6px 0 0; font-size: 14px; color: var(--error); }
+  .err[hidden] { display: none; }
+
+  .check { display: flex; align-items: center; gap: 10px; font-weight: 400; font-size: 15px; margin: 4px 0 24px; cursor: pointer; }
+  .check input { width: 18px; height: 18px; margin: 0; accent-color: var(--teal); }
+
+  .primary {
+    width: 100%; height: 52px;
+    font: inherit; font-weight: 600; font-size: 16px;
+    color: #fff; background: var(--teal);
+    border: 0; border-radius: 10px; cursor: pointer;
+    transition: background .15s, transform .05s;
+  }
+  .primary:hover { background: var(--teal-deep); }
+  .primary:active { transform: translateY(1px); }
+  .primary:disabled { background: #5d8f8c; cursor: progress; }
+
+  .status { min-height: 22px; margin: 12px 0 0; font-size: 14px; color: var(--muted); }
+  .status.is-error { color: var(--error); }
+
+  .divider { display: flex; align-items: center; gap: 14px; margin: 24px 0; color: var(--muted); font-size: 14px; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  .social { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .social button {
+    height: 48px; font: inherit; font-weight: 500; font-size: 15px; color: var(--ink);
+    background: #fff; border: 1.5px solid var(--line); border-radius: 10px; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .social button:hover { border-color: #a9b8bd; background: #f6f9f9; }
+
+  .alt { margin: 28px 0 0; color: var(--muted); font-size: 15px; }
+  .alt p { margin: 0 0 6px; }
+  .alt a { color: var(--teal); font-weight: 600; text-underline-offset: 3px; }
+
+  .auth-foot { display: flex; gap: 20px; font-size: 13px; color: var(--muted); }
+  .auth-foot a { text-underline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <section class="auth">
+    <a class="brand" href="/" aria-label="Shopping cart home">Shopping cart</a>
+
+    <main class="auth-main">
+      <h1>Sign in to your account</h1>
+      <p class="lede">Track orders, reuse saved addresses and check out faster.</p>
+
+      <form id="login" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" inputmode="email" aria-describedby="email-err" autofocus>
+          <p class="err" id="email-err" hidden></p>
+        </div>
+
+        <div class="field">
+          <div class="label-row">
+            <label for="password">Password</label>
+            <a class="link" href="/forgot-password">Forgot password?</a>
+          </div>
+          <div class="pw">
+            <input id="password" name="password" type="password" autocomplete="current-password" aria-describedby="password-err">
+            <button class="reveal" type="button" aria-controls="password" aria-pressed="false">Show</button>
+          </div>
+          <p class="err" id="password-err" hidden></p>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" name="remember"> Keep me signed in on this device
+        </label>
+
+        <button class="primary" type="submit">Sign in</button>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="divider">or</div>
+
+      <div class="social">
+        <button type="button">Continue with Google</button>
+      </div>
+
+      <div class="alt">
+        <p>New to Shopping cart? <a href="signup.html">Create an account</a></p>
+        <p>Checking out? <a href="/checkout?guest=1">Continue as guest</a></p>
+      </div>
+    </main>
+
+    <footer class="auth-foot">
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/help">Help</a>
+    </footer>
+  </section>
+
+
+</div>
+
+<script>
+  const form = document.getElementById('login');
+  const email = document.getElementById('email');
+  const password = document.getElementById('password');
+  const reveal = document.querySelector('.reveal');
+  const submitBtn = form.querySelector('.primary');
+  const status = document.getElementById('status');
+
+  function setError(input, message) {
+    const err = document.getElementById(input.id + '-err');
+    if (message) {
+      err.textContent = message;
+      err.hidden = false;
+      input.setAttribute('aria-invalid', 'true');
+    } else {
+      err.hidden = true;
+      input.removeAttribute('aria-invalid');
+    }
+  }
+
+  reveal.addEventListener('click', () => {
+    const show = password.type === 'password';
+    password.type = show ? 'text' : 'password';
+    reveal.textContent = show ? 'Hide' : 'Show';
+    reveal.setAttribute('aria-pressed', String(show));
+  });
+
+  [email, password].forEach(input =>
+    input.addEventListener('input', () => { setError(input, ''); status.textContent = ''; })
+  );
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    let firstInvalid = null;
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+      setError(email, 'Enter the email you signed up with, like name@example.com.');
+      firstInvalid = email;
+    }
+    if (!password.value) {
+      setError(password, 'Enter your password.');
+      firstInvalid = firstInvalid || password;
+    }
+    if (firstInvalid) { firstInvalid.focus(); return; }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Signing in…';
+    status.className = 'status';
+    status.textContent = '';
+
+    try {
+      // TODO: replace this demo delay with your real login request, e.g.
+      // const res = await fetch('/api/login', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ email: email.value.trim(), password: password.value,
+      //                          remember: form.remember.checked })
+      // });
+      // if (!res.ok) throw new Error('Invalid credentials');
+      await new Promise(resolve => setTimeout(resolve, 900));
+      status.textContent = 'Signed in.';
+      // window.location.href = '/account';
+    } catch (err) {
+      status.className = 'status is-error';
+      status.textContent = 'That email and password don’t match. Check them and try again.';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign in';
+    }
+  });
+</script>
+</body>
+</html>
