@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopping cart | Home, kitchen and tech for everyday life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12202b;
+    --muted: #566873;
+    --line: #d3dcdf;
+    --teal: #0d5f5b;
+    --teal-deep: #0a4744;
+    --mint: #d9ede8;
+    --signal: #ffd23f;
+    --band: #f3f6f6;
+    --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; font-family: var(--body); font-size: 16px; line-height: 1.5; color: var(--ink); background: #fff; }
+  a { color: inherit; }
+  h1, h2, h3 { margin: 0; }
+  :focus-visible { outline: 3px solid #2b8a84; outline-offset: 2px; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding-inline: 24px; }
+  .skip { position: absolute; left: -999px; top: 8px; background: #fff; padding: 8px 12px; border-radius: 8px; z-index: 30; }
+  .skip:focus { left: 8px; }
+
+  /* ---------- Header ---------- */
+  .topbar { background: var(--teal-deep); color: #e4f3ef; font-size: 14px; text-align: center; padding: 8px 16px; }
+
+  .site { position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid var(--line); }
+  .head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px 32px; padding-block: 14px; }
+  .brand { font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: -0.02em; text-decoration: none; color: var(--teal); }
+
+  .search { display: flex; max-width: 560px; width: 100%; margin: 0 auto; }
+  .search input {
+    flex: 1; min-width: 0; height: 44px; padding: 0 14px; font: inherit; color: var(--ink);
+    background: #fff; border: 1.5px solid var(--line); border-right: 0; border-radius: 10px 0 0 10px;
+  }
+  .search input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13, 95, 91, .18); }
+  .search button {
+    height: 44px; padding: 0 18px; font: inherit; font-weight: 600; color: #fff; background: var(--teal);
+    border: 0; border-radius: 0 10px 10px 0; cursor: pointer;
+  }
+  .search button:hover { background: var(--teal-deep); }
+
+  .actions { display: flex; align-items: center; gap: 22px; }
+  .actions a { text-decoration: none; font-weight: 500; }
+  .actions a:hover { color: var(--teal); }
+  .cart { display: inline-flex; align-items: center; gap: 8px; }
+  .cart svg { width: 24px; height: 24px; }
+  .count { min-width: 22px; height: 22px; padding: 0 6px; display: inline-grid; place-items: center; font-size: 13px; font-weight: 700; background: var(--signal); border-radius: 999px; }
+
+  @media (max-width: 760px) {
+    .head { grid-template-columns: 1fr auto; }
+    .search { grid-column: 1 / -1; grid-row: 2; max-width: none; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero { display: grid; gap: 32px; grid-template-columns: minmax(0, 1fr); align-items: center; padding-block: 40px 56px; }
+  @media (min-width: 900px) { .hero { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 56px; } }
+
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(36px, 5vw, 56px); line-height: 1.05; letter-spacing: -0.03em; max-width: 16ch; }
+  .hero p { margin: 18px 0 28px; max-width: 44ch; font-size: 18px; color: var(--muted); }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; height: 50px; padding: 0 24px;
+    font: inherit; font-weight: 600; text-decoration: none; border-radius: 10px; border: 1.5px solid transparent;
+    transition: background .15s, border-color .15s;
+  }
+  .btn-primary { color: #fff; background: var(--teal); }
+  .btn-primary:hover { background: var(--teal-deep); }
+  .btn-ghost { color: var(--teal); border-color: var(--line); background: #fff; }
+  .btn-ghost:hover { border-color: var(--teal); }
+
+  .hero-art {
+    position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 1.5%;
+    min-height: 300px; padding: 48px 24px 64px; background: var(--teal); border-radius: 24px; overflow: hidden;
+  }
+  .hero-art::after { content: ""; position: absolute; left: 6%; right: 6%; bottom: 52px; height: 12px; border-radius: 6px; background: var(--teal-deep); }
+  .hero-art svg { display: block; height: auto; position: relative; z-index: 1; }
+  .s-plant { width: 30%; --a: #ffffff; --b: #9fd8c8; }
+  .s-lamp { width: 44%; --a: #ffd23f; --b: #d9ede8; }
+  .s-mug { width: 22%; --a: #ffffff; --b: #ffd23f; }
+
+  /* ---------- Sections ---------- */
+  .section { padding-bottom: 56px; }
+  .section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  h2 { font-family: var(--display); font-weight: 700; font-size: clamp(26px, 3.4vw, 32px); letter-spacing: -0.02em; line-height: 1.15; }
+  #products { scroll-margin-top: 96px; }
+
+  .cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+  .cat {
+    display: flex; flex-direction: column; gap: 10px; padding: 16px; text-decoration: none; font-weight: 600;
+    background: var(--tile); border-radius: 14px; border: 1.5px solid transparent; transition: border-color .15s;
+  }
+  .cat:hover { border-color: var(--ink); }
+  .cat svg { width: 64px; height: 64px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    height: 38px; padding: 0 16px; font: inherit; font-size: 15px; font-weight: 500; color: var(--ink);
+    background: #fff; border: 1.5px solid var(--line); border-radius: 999px; cursor: pointer;
+  }
+  .chip:hover { border-color: var(--teal); }
+  .chip[aria-pressed="true"] { color: #fff; background: var(--teal); border-color: var(--teal); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 28px 20px; }
+  .card[hidden] { display: none; }
+  .art { display: grid; place-items: center; aspect-ratio: 1 / 1; background: var(--tile); border-radius: 14px; }
+  .art svg { width: 62%; height: 62%; }
+  .card h3 { margin: 14px 0 2px; font-family: var(--body); font-size: 17px; font-weight: 600; }
+  .note { margin: 0; font-size: 14px; color: var(--muted); }
+  .buy { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+  .price { font-weight: 600; font-size: 17px; }
+  .add {
+    height: 40px; padding: 0 16px; font: inherit; font-size: 15px; font-weight: 600; color: var(--teal);
+    background: #fff; border: 1.5px solid var(--teal); border-radius: 10px; cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .add:hover, .add.done { color: #fff; background: var(--teal); }
+
+  /* ---------- Trust + footer ---------- */
+  .trust { background: var(--band); padding-block: 40px; margin-bottom: 0; }
+  .trust ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .trust strong { display: block; font-family: var(--display); font-size: 19px; letter-spacing: -0.01em; }
+  .trust span { color: var(--muted); font-size: 15px; }
+
+  footer.site-foot { background: var(--teal-deep); color: #d3ebe6; padding-block: 40px 28px; }
+  .foot-grid { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .foot-grid .brand { color: #fff; }
+  .foot-grid h3 { font-family: var(--body); font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 10px; }
+  .foot-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; }
+  .foot-grid a { text-underline-offset: 3px; }
+  .legal { margin: 32px 0 0; font-size: 13px; color: #9fc7c0; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; z-index: 40; transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
+    padding: 12px 18px; font-size: 15px; color: #fff; background: var(--ink); border-radius: 10px;
+    transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- Product illustrations, reused across the page. Colors come from --a and --b. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-mug">
+      <path d="M68 52h5a10 10 0 0 1 0 22h-5" fill="none" stroke="var(--a)" stroke-width="6" stroke-linecap="round"/>
+      <rect x="24" y="44" width="44" height="42" rx="8" fill="var(--a)"/>
+      <rect x="24" y="44" width="44" height="9" rx="4" fill="var(--b)"/>
+    </g>
+    <g id="i-lamp">
+      <path d="M32 14h36l9 28H23z" fill="var(--a)"/>
+      <rect x="48" y="42" width="4" height="38" fill="var(--b)"/>
+      <rect x="34" y="80" width="32" height="6" rx="3" fill="var(--b)"/>
+    </g>
+    <g id="i-headphones">
+      <path d="M24 62a26 26 0 0 1 52 0" fill="none" stroke="var(--b)" stroke-width="6" stroke-linecap="round"/>
+      <rect x="17" y="58" width="15" height="26" rx="7.5" fill="var(--a)"/>
+      <rect x="68" y="58" width="15" height="26" rx="7.5" fill="var(--a)"/>
+    </g>
+    <g id="i-bottle">
+      <rect x="42" y="12" width="16" height="10" rx="3" fill="var(--b)"/>
+      <rect x="35" y="22" width="30" height="64" rx="10" fill="var(--a)"/>
+      <rect x="35" y="46" width="30" height="14" fill="var(--b)"/>
+    </g>
+    <g id="i-backpack">
+      <path d="M42 26v-6a8 8 0 0 1 16 0v6" fill="none" stroke="var(--b)" stroke-width="4"/>
+      <rect x="26" y="26" width="48" height="60" rx="16" fill="var(--a)"/>
+      <rect x="34" y="56" width="32" height="22" rx="8" fill="var(--b)"/>
+      <path d="M36 44h28" stroke="var(--b)" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g id="i-watch">
+      <rect x="40" y="8" width="20" height="78" rx="6" fill="var(--b)"/>
+      <circle cx="50" cy="50" r="24" fill="var(--a)"/>
+      <path d="M50 50V36M50 50l9 6" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+    </g>
+    <g id="i-plant">
+      <ellipse cx="50" cy="42" rx="6" ry="18" fill="var(--b)"/>
+      <ellipse cx="37" cy="50" rx="5" ry="15" transform="rotate(-35 37 50)" fill="var(--b)"/>
+      <ellipse cx="63" cy="50" rx="5" ry="15" transform="rotate(35 63 50)" fill="var(--b)"/>
+      <path d="M32 64h36l-5 22H37z" fill="var(--a)"/>
+    </g>
+    <g id="i-cushion">
+      <rect x="18" y="28" width="64" height="54" rx="16" fill="var(--a)"/>
+      <path d="M32 42l36 26M68 42L32 68" fill="none" stroke="var(--b)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+    </g>
+  </defs>
+</svg>
+
+<a class="skip" href="#products">Skip to products</a>
+
+<div class="topbar">Free delivery on orders over $50</div>
+
+<header class="site">
+  <div class="wrap head">
+    <a class="brand" href="index.html" aria-label="Shopping cart home">Shopping cart</a>
+
+    <form class="search" role="search" action="/search" method="get">
+      <input type="search" name="q" placeholder="Search for products" aria-label="Search for products">
+      <button type="submit">Search</button>
+    </form>
+
+    <nav class="actions" aria-label="Account">
+      <a href="login-page.html">Sign in</a>
+      <a class="cart" href="cart.html" id="cart-link" aria-label="Cart, 0 items">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>
+        <span class="count" id="cart-count">0</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero">
+    <div>
+      <h1>Fresh picks for your home, delivered to your door</h1>
+      <p>New arrivals in home, kitchen and tech, with free delivery over $50 and 30-day returns.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#products">Shop new arrivals</a>
+        <a class="btn btn-ghost" href="#categories">Browse categories</a>
+      </div>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <svg class="s-plant" viewBox="0 0 100 86"><use href="#i-plant"/></svg>
+      <svg class="s-lamp" viewBox="0 0 100 86"><use href="#i-lamp"/></svg>
+      <svg class="s-mug" viewBox="0 0 100 86"><use href="#i-mug"/></svg>
+    </div>
+  </section>
+
+  <section class="wrap section" id="categories">
+    <div class="section-head"><h2>Shop by category</h2></div>
+    <div class="cats">
+      <a class="cat" href="#products" data-filter="Home" style="--tile:#fff0c2;--a:#e8735a;--b:#12202b">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-lamp"/></svg>Home
+      </a>
+      <a class="cat" href="#products" data-filter="Kitchen" style="--tile:#dcefe9;--a:#0d5f5b;--b:#ffd23f">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-mug"/></svg>Kitchen
+      </a>
+      <a class="cat" href="#products" data-filter="Tech" style="--tile:#dbe7f3;--a:#12202b;--b:#4f86b8">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-headphones"/></svg>Tech
+      </a>
+      <a class="cat" href="#products" data-filter="Bags" style="--tile:#f6dcd3;--a:#12202b;--b:#e8735a">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-backpack"/></svg>Bags
+      </a>
+      <a class="cat" href="#products" data-filter="Style" style="--tile:#ececec;--a:#12202b;--b:#0d5f5b">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-watch"/></svg>Style
+      </a>
+    </div>
+  </section>
+
+  <section class="wrap section" id="products">
+    <div class="section-head">
+      <h2>New arrivals</h2>
+      <div class="chips" id="filters" role="group" aria-label="Filter by category">
+        <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-filter="Home" aria-pressed="false">Home</button>
+        <button class="chip" type="button" data-filter="Kitchen" aria-pressed="false">Kitchen</button>
+        <button class="chip" type="button" data-filter="Tech" aria-pressed="false">Tech</button>
+        <button class="chip" type="button" data-filter="Bags" aria-pressed="false">Bags</button>
+        <button class="chip" type="button" data-filter="Style" aria-pressed="false">Style</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="trust" aria-label="Shopping with us">
+    <div class="wrap">
+      <ul>
+        <li><strong>Free delivery over $50</strong><span>Orders over $50 ship at no cost.</span></li>
+        <li><strong>30-day returns</strong><span>Changed your mind? Send it back.</span></li>
+        <li><strong>Secure checkout</strong><span>Your payment details are encrypted.</span></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="index.html">Shopping cart</a></div>
+      <div>
+        <h3>Shop</h3>
+        <ul><li><a href="#products">New arrivals</a></li><li><a href="#categories">Categories</a></li><li><a href="cart.html">Cart</a></li></ul>
+      </div>
+      <div>
+        <h3>Help</h3>
+        <ul><li><a href="/delivery">Delivery</a></li><li><a href="/returns">Returns</a></li><li><a href="/help">Contact us</a></li></ul>
+      </div>
+      <div>
+        <h3>Account</h3>
+        <ul><li><a href="login-page.html">Sign in</a></li><li><a href="signup.html">Create account</a></li><li><a href="/orders">Your orders</a></li></ul>
+      </div>
+    </div>
+    <p class="legal">© 2026 Shopping cart. All rights reserved.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const CURRENCY = '$'; // change to '₹', '€', '£' and so on
+
+  // Sample products. Replace with data from your backend.
+  const products = [
+    { id: 1, name: 'Stoneware mug',       note: 'Set of 2, dishwasher safe',      price: 18, cat: 'Kitchen', icon: 'i-mug',        tile: '#dcefe9', a: '#0d5f5b', b: '#ffd23f' },
+    { id: 2, name: 'Ceramic table lamp',  note: 'Warm white bulb included',       price: 64, cat: 'Home',    icon: 'i-lamp',       tile: '#fff0c2', a: '#e8735a', b: '#12202b' },
+    { id: 3, name: 'Wireless headphones', note: '30-hour battery life',           price: 89, cat: 'Tech',    icon: 'i-headphones', tile: '#dbe7f3', a: '#12202b', b: '#4f86b8' },
+    { id: 4, name: 'Steel water bottle',  note: 'Keeps drinks cold for 24 hours', price: 24, cat: 'Kitchen', icon: 'i-bottle',     tile: '#e6e2f3', a: '#4c5aa8', b: '#ffd23f' },
+    { id: 5, name: 'Everyday backpack',   note: 'Fits a 15-inch laptop',          price: 58, cat: 'Bags',    icon: 'i-backpack',   tile: '#f6dcd3', a: '#12202b', b: '#e8735a' },
+    { id: 6, name: 'Minimal watch',       note: 'Water resistant to 50 m',        price: 72, cat: 'Style',   icon: 'i-watch',      tile: '#ececec', a: '#12202b', b: '#0d5f5b' },
+    { id: 7, name: 'Ceramic plant pot',   note: 'With drainage tray',             price: 22, cat: 'Home',    icon: 'i-plant',      tile: '#e3efd8', a: '#e8735a', b: '#2f8f5b' },
+    { id: 8, name: 'Linen cushion',       note: 'Removable, washable cover',      price: 28, cat: 'Home',    icon: 'i-cushion',    tile: '#fde3e0', a: '#0d5f5b', b: '#ffffff' }
+  ];
+
+  const grid = document.getElementById('grid');
+  const chips = document.querySelectorAll('.chip');
+  const toast = document.getElementById('toast');
+  const cartCount = document.getElementById('cart-count');
+  const cartLink = document.getElementById('cart-link');
+  let cart = 0;
+  let toastTimer;
+
+  grid.innerHTML = products.map(p => `
+    <article class="card" data-cat="${p.cat}">
+      <div class="art" style="--tile:${p.tile};--a:${p.a};--b:${p.b}">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#${p.icon}"/></svg>
+      </div>
+      <h3>${p.name}</h3>
+      <p class="note">${p.note}</p>
+      <div class="buy">
+        <span class="price">${CURRENCY}${p.price.toFixed(2)}</span>
+        <button class="add" type="button" data-name="${p.name}">Add to cart</button>
+      </div>
+    </article>`).join('');
+
+  function setFilter(filter) {
+    chips.forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === filter)));
+    grid.querySelectorAll('.card').forEach(card => {
+      card.hidden = filter !== 'all' && card.dataset.cat !== filter;
+    });
+  }
+
+  chips.forEach(c => c.addEventListener('click', () => setFilter(c.dataset.filter)));
+
+  document.querySelectorAll('.cat').forEach(tile => {
+    tile.addEventListener('click', (e) => {
+      e.preventDefault();
+      setFilter(tile.dataset.filter);
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.getElementById('products').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+
+  grid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.add');
+    if (!btn) return;
+
+    // TODO: send this to your cart API, e.g. fetch('/api/cart', { method: 'POST', ... })
+    cart += 1;
+    cartCount.textContent = cart;
+    cartLink.setAttribute('aria-label', `Cart, ${cart} ${cart === 1 ? 'item' : 'items'}`);
+
+    btn.textContent = 'Added';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = 'Add to cart'; btn.classList.remove('done'); }, 1200);
+
+    toast.textContent = `${btn.dataset.name} added to cart`;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  });
+</script>
+</body>
+</html>
