@@ -258,20 +258,33 @@
     status.textContent = '';
 
     try {
-      // TODO: replace this demo delay with your real login request, e.g.
-      // const res = await fetch('/api/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email: email.value.trim(), password: password.value,
-      //                          remember: form.remember.checked })
-      // });
-      // if (!res.ok) throw new Error('Invalid credentials');
-      await new Promise(resolve => setTimeout(resolve, 900));
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: email.value.trim(), 
+          password: password.value,
+          remember: form.remember.checked 
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Invalid credentials');
+      }
+      
+      // Store user ID and name in localStorage
+      localStorage.setItem('userId', data.user.id);
+      localStorage.setItem('userName', data.user.name);
+      
       status.textContent = 'Signed in.';
-      // window.location.href = '/account';
+      setTimeout(() => {
+        window.location.href = '/Home.html';
+      }, 1000);
     } catch (err) {
       status.className = 'status is-error';
-      status.textContent = 'That email and password don’t match. Check them and try again.';
+      status.textContent = 'That email and password don\'t match. Check them and try again.';
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Sign in';
