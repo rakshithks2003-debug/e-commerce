@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your cart | Shopping cart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12202b;
+    --muted: #566873;
+    --line: #d3dcdf;
+    --teal: #0d5f5b;
+    --teal-deep: #0a4744;
+    --mint: #d9ede8;
+    --signal: #ffd23f;
+    --band: #f3f6f6;
+    --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; font-family: var(--body); font-size: 16px; line-height: 1.5; color: var(--ink); background: #fff; }
+  a { color: inherit; }
+  h1, h2, h3, p, dl, dd, ul { margin: 0; padding: 0; }
+  :focus-visible { outline: 3px solid #2b8a84; outline-offset: 2px; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding-inline: 24px; width: 100%; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Header ---------- */
+  .topbar { background: var(--teal-deep); color: #e4f3ef; font-size: 14px; text-align: center; padding: 8px 16px; }
+  .site { position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid var(--line); }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 14px; }
+  .brand { font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: -0.02em; text-decoration: none; color: var(--teal); }
+  .actions { display: flex; align-items: center; gap: 22px; }
+  .actions a { text-decoration: none; font-weight: 500; }
+  .actions a:hover { color: var(--teal); }
+  .cart { display: inline-flex; align-items: center; gap: 8px; }
+  .cart svg { width: 24px; height: 24px; }
+  .count { min-width: 22px; height: 22px; padding: 0 6px; display: inline-grid; place-items: center; font-size: 13px; font-weight: 700; background: var(--signal); border-radius: 999px; }
+
+  /* ---------- Page ---------- */
+  main { flex: 1; padding-block: 36px 64px; }
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(32px, 4.5vw, 44px); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 28px; }
+  h1 .n { font-family: var(--body); font-weight: 400; font-size: 18px; letter-spacing: 0; color: var(--muted); margin-left: 8px; }
+  h1:focus { outline: none; }
+
+  .cart-layout { display: grid; gap: 32px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 900px) { .cart-layout { grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; } }
+
+  /* free delivery progress */
+  .ship { margin-bottom: 8px; padding: 16px 18px; background: var(--band); border-radius: 12px; font-size: 15px; }
+  .track { height: 6px; margin-top: 10px; background: #d8e2e4; border-radius: 3px; overflow: hidden; }
+  .fill { height: 100%; background: var(--teal); border-radius: 3px; transition: width .25s; }
+
+  /* items */
+  .lines { list-style: none; }
+  .line { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 8px 18px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+  @media (max-width: 520px) { .line { grid-template-columns: 76px minmax(0, 1fr) auto; gap: 8px 14px; } }
+  .art { display: grid; place-items: center; aspect-ratio: 1 / 1; background: var(--tile); border-radius: 12px; }
+  .art svg { width: 66%; height: 66%; }
+  .info h3 { font-family: var(--body); font-size: 17px; font-weight: 600; line-height: 1.3; }
+  .note { font-size: 14px; color: var(--muted); }
+  .unit { font-size: 14px; color: var(--muted); }
+  .total { font-weight: 600; font-size: 17px; white-space: nowrap; }
+
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 12px; }
+  .stepper { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 10px; }
+  .stepper button {
+    width: 38px; height: 38px; font: inherit; font-size: 20px; line-height: 1; color: var(--ink);
+    background: none; border: 0; border-radius: 8px; cursor: pointer;
+  }
+  .stepper button:hover:not(:disabled) { background: var(--mint); }
+  .stepper button:disabled { color: #a9b8bd; cursor: not-allowed; }
+  .stepper .qty { min-width: 32px; text-align: center; font-weight: 600; }
+  .remove { padding: 6px 2px; font: inherit; font-size: 15px; color: var(--teal); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .remove:hover { color: var(--teal-deep); }
+
+  /* summary */
+  .summary { padding: 24px; background: var(--band); border-radius: 16px; }
+  @media (min-width: 900px) { .summary { position: sticky; top: 96px; } }
+  .summary h2 { font-family: var(--display); font-size: 22px; letter-spacing: -0.01em; margin-bottom: 16px; }
+  .summary dl { display: grid; gap: 10px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; }
+  .row dt { color: var(--muted); }
+  .row dd { font-weight: 500; }
+  .row.grand { padding-top: 14px; margin-top: 4px; border-top: 1px solid var(--line); font-size: 19px; }
+  .row.grand dt { color: var(--ink); font-weight: 600; }
+  .row.grand dd { font-weight: 700; }
+  .fine { margin: 14px 0 20px; font-size: 14px; color: var(--muted); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; height: 52px; padding: 0 24px;
+    font: inherit; font-weight: 600; text-decoration: none; border-radius: 10px; border: 1.5px solid transparent;
+    transition: background .15s;
+  }
+  .btn-primary { color: #fff; background: var(--teal); }
+  .btn-primary:hover { background: var(--teal-deep); }
+  .summary .btn { width: 100%; }
+  .more { display: block; margin-top: 16px; text-align: center; font-weight: 500; color: var(--teal); text-underline-offset: 3px; }
+
+  /* empty state */
+  .empty { max-width: 460px; padding: 32px 0 16px; }
+  .empty h2 { font-family: var(--display); font-size: 26px; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .empty p { margin-bottom: 24px; color: var(--muted); }
+
+  footer { background: var(--teal-deep); color: #d3ebe6; padding-block: 28px; font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; }
+  footer nav { display: flex; gap: 20px; }
+  footer a { text-underline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- Product illustrations. Colors come from --a and --b. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-mug">
+      <path d="M68 52h5a10 10 0 0 1 0 22h-5" fill="none" stroke="var(--a)" stroke-width="6" stroke-linecap="round"/>
+      <rect x="24" y="44" width="44" height="42" rx="8" fill="var(--a)"/>
+      <rect x="24" y="44" width="44" height="9" rx="4" fill="var(--b)"/>
+    </g>
+    <g id="i-lamp">
+      <path d="M32 14h36l9 28H23z" fill="var(--a)"/>
+      <rect x="48" y="42" width="4" height="38" fill="var(--b)"/>
+      <rect x="34" y="80" width="32" height="6" rx="3" fill="var(--b)"/>
+    </g>
+    <g id="i-headphones">
+      <path d="M24 62a26 26 0 0 1 52 0" fill="none" stroke="var(--b)" stroke-width="6" stroke-linecap="round"/>
+      <rect x="17" y="58" width="15" height="26" rx="7.5" fill="var(--a)"/>
+      <rect x="68" y="58" width="15" height="26" rx="7.5" fill="var(--a)"/>
+    </g>
+    <g id="i-bottle">
+      <rect x="42" y="12" width="16" height="10" rx="3" fill="var(--b)"/>
+      <rect x="35" y="22" width="30" height="64" rx="10" fill="var(--a)"/>
+      <rect x="35" y="46" width="30" height="14" fill="var(--b)"/>
+    </g>
+    <g id="i-backpack">
+      <path d="M42 26v-6a8 8 0 0 1 16 0v6" fill="none" stroke="var(--b)" stroke-width="4"/>
+      <rect x="26" y="26" width="48" height="60" rx="16" fill="var(--a)"/>
+      <rect x="34" y="56" width="32" height="22" rx="8" fill="var(--b)"/>
+      <path d="M36 44h28" stroke="var(--b)" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g id="i-watch">
+      <rect x="40" y="8" width="20" height="78" rx="6" fill="var(--b)"/>
+      <circle cx="50" cy="50" r="24" fill="var(--a)"/>
+      <path d="M50 50V36M50 50l9 6" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+    </g>
+    <g id="i-plant">
+      <ellipse cx="50" cy="42" rx="6" ry="18" fill="var(--b)"/>
+      <ellipse cx="37" cy="50" rx="5" ry="15" transform="rotate(-35 37 50)" fill="var(--b)"/>
+      <ellipse cx="63" cy="50" rx="5" ry="15" transform="rotate(35 63 50)" fill="var(--b)"/>
+      <path d="M32 64h36l-5 22H37z" fill="var(--a)"/>
+    </g>
+    <g id="i-cushion">
+      <rect x="18" y="28" width="64" height="54" rx="16" fill="var(--a)"/>
+      <path d="M32 42l36 26M68 42L32 68" fill="none" stroke="var(--b)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/>
+    </g>
+  </defs>
+</svg>
+
+<div class="topbar">Free delivery on orders over $50</div>
+
+<header class="site">
+  <div class="wrap head">
+    <a class="brand" href="index.html" aria-label="Shopping cart home">Shopping cart</a>
+    <nav class="actions" aria-label="Account">
+      <a href="index.html#products">Continue shopping</a>
+      <a href="login-page.html">Sign in</a>
+      <a class="cart" href="cart.html" id="cart-link" aria-label="Cart, 0 items" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>
+        <span class="count" id="cart-count">0</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1 id="page-title" tabindex="-1">Your cart <span class="n" id="item-count"></span></h1>
+  <div id="cart-root"></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Shopping cart. All rights reserved.</span>
+    <nav aria-label="Help">
+      <a href="/delivery">Delivery</a>
+      <a href="/returns">Returns</a>
+      <a href="/help">Help</a>
+    </nav>
+  </div>
+</footer>
+
+<p class="sr-only" id="sr-status" role="status" aria-live="polite"></p>
+
+<script>
+  const CURRENCY = '$';            // change to '₹', '€', '£' and so on
+  const FREE_SHIPPING_MIN = 50;    // free delivery from this subtotal
+  const SHIPPING_FLAT = 4.99;      // delivery cost below that
+  const MAX_QTY = 10;
+  const CART_KEY = 'shopping-cart';
+
+  const root = document.getElementById('cart-root');
+  const itemCount = document.getElementById('item-count');
+  const cartCount = document.getElementById('cart-count');
+  const cartLink = document.getElementById('cart-link');
+  const srStatus = document.getElementById('sr-status');
+
+  // The cart is read from the browser, where the home page saves it.
+  // TODO: when you have a backend, load the cart from your API instead (GET /api/cart).
+  function loadCart() {
+    try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch (e) { return []; }
+  }
+  function saveCart() {
+    try { localStorage.setItem(CART_KEY, JSON.stringify(items)); } catch (e) { /* storage unavailable */ }
+  }
+  let items = loadCart();
+
+  const money = (n) => CURRENCY + n.toFixed(2);
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function render(focusSelector) {
+    const count = items.reduce((sum, i) => sum + i.qty, 0);
+    const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_MIN ? 0 : SHIPPING_FLAT;
+
+    cartCount.textContent = count;
+    cartLink.setAttribute('aria-label', `Cart, ${count} ${count === 1 ? 'item' : 'items'}`);
+    itemCount.textContent = count ? `(${count} ${count === 1 ? 'item' : 'items'})` : '';
+
+    if (!items.length) {
+      root.innerHTML = `
+        <div class="empty">
+          <h2>Your cart is empty</h2>
+          <p>Add something you like and it will show up here.</p>
+          <a class="btn btn-primary" href="index.html#products">Browse new arrivals</a>
+        </div>`;
+      return;
+    }
+
+    const away = FREE_SHIPPING_MIN - subtotal;
+    const pct = Math.min(100, Math.round((subtotal / FREE_SHIPPING_MIN) * 100));
+    const shipMsg = away > 0
+      ? `You're ${money(away)} away from free delivery.`
+      : 'Your order qualifies for free delivery.';
+
+    root.innerHTML = `
+      <div class="cart-layout">
+        <section aria-label="Items in your cart">
+          <div class="ship">
+            <span>${shipMsg}</span>
+            <div class="track" aria-hidden="true"><div class="fill" style="width:${pct}%"></div></div>
+          </div>
+          <ul class="lines">
+            ${items.map(i => `
+              <li class="line">
+                <div class="art" style="--tile:${esc(i.tile)};--a:${esc(i.a)};--b:${esc(i.b)}">
+                  <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#${esc(i.icon)}"/></svg>
+                </div>
+                <div class="info">
+                  <h3>${esc(i.name)}</h3>
+                  <p class="note">${esc(i.note)}</p>
+                  <p class="unit">${money(i.price)} each</p>
+                  <div class="controls">
+                    <div class="stepper" role="group" aria-label="Quantity of ${esc(i.name)}">
+                      <button type="button" data-action="dec" data-id="${i.id}" aria-label="Decrease quantity of ${esc(i.name)}" ${i.qty <= 1 ? 'disabled' : ''}>−</button>
+                      <span class="qty" aria-live="off">${i.qty}</span>
+                      <button type="button" data-action="inc" data-id="${i.id}" aria-label="Increase quantity of ${esc(i.name)}" ${i.qty >= MAX_QTY ? 'disabled' : ''}>+</button>
+                    </div>
+                    <button class="remove" type="button" data-action="remove" data-id="${i.id}" aria-label="Remove ${esc(i.name)} from cart">Remove</button>
+                  </div>
+                </div>
+                <div class="total">${money(i.price * i.qty)}</div>
+              </li>`).join('')}
+          </ul>
+        </section>
+
+        <aside class="summary" aria-label="Order summary">
+          <h2>Order summary</h2>
+          <dl>
+            <div class="row"><dt>Subtotal</dt><dd>${money(subtotal)}</dd></div>
+            <div class="row"><dt>Delivery</dt><dd>${shipping === 0 ? 'Free' : money(shipping)}</dd></div>
+            <div class="row grand"><dt>Total</dt><dd>${money(subtotal + shipping)}</dd></div>
+          </dl>
+          <p class="fine">Taxes are calculated at checkout.</p>
+          <!-- TODO: point this at your checkout page or start a checkout session on your server -->
+          <a class="btn btn-primary" href="checkout.html">Checkout</a>
+          <a class="more" href="index.html#products">Continue shopping</a>
+        </aside>
+      </div>`;
+
+    if (focusSelector) {
+      const el = root.querySelector(focusSelector);
+      if (el && !el.disabled) el.focus();
+    }
+  }
+
+  root.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const id = Number(btn.dataset.id);
+    const line = items.find(i => i.id === id);
+    if (!line) return;
+    const action = btn.dataset.action;
+
+    // TODO: also send each change to your cart API, e.g. fetch('/api/cart/' + id, { method: 'PATCH', ... })
+    if (action === 'inc' && line.qty < MAX_QTY) {
+      line.qty += 1;
+      saveCart();
+      srStatus.textContent = `Quantity of ${line.name} is now ${line.qty}.`;
+      render(`[data-action="inc"][data-id="${id}"]`);
+    } else if (action === 'dec' && line.qty > 1) {
+      line.qty -= 1;
+      saveCart();
+      srStatus.textContent = `Quantity of ${line.name} is now ${line.qty}.`;
+      render(`[data-action="dec"][data-id="${id}"]`);
+    } else if (action === 'remove') {
+      items = items.filter(i => i.id !== id);
+      saveCart();
+      srStatus.textContent = `${line.name} removed from cart.`;
+      render();
+      document.getElementById('page-title').focus();
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>
